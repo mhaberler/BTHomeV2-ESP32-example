@@ -40,9 +40,9 @@ void BTHome::begin(String dname, bool encryption, uint8_t const* const key, bool
     #else
       this->m_encryptCount = random(0, UINT32_MAX) % 0x427;
     #endif
-    memcpy(bindKey, key, sizeof(uint8_t) * BIND_KEY_LEN);
+    memcpy(m_bindKey, key, sizeof(uint8_t) * BIND_KEY_LEN);
     mbedtls_ccm_init(&this->m_encryptCTX);
-    mbedtls_ccm_setkey(&this->m_encryptCTX, MBEDTLS_CIPHER_ID_AES, bindKey, BIND_KEY_LEN * 8);
+    mbedtls_ccm_setkey(&this->m_encryptCTX, MBEDTLS_CIPHER_ID_AES, m_bindKey, BIND_KEY_LEN * 8);
   } else {
     this->m_encryptEnable = false;
   }
@@ -53,12 +53,12 @@ void BTHome::begin(String dname, bool encryption, uint8_t const* const key, bool
 
 void BTHome::setDeviceName(String dname) {
   if (!dname.isEmpty())
-    this->dev_name = dname;
+    this->m_devName = dname;
 }
 
 void BTHome::resetMeasurement() {
   this->m_sensorDataIdx = 0;
-  this->last_object_id = 0;
+  this->m_lastObjectId = 0;
   this->m_sortEnable = false;
 }
 
@@ -73,9 +73,9 @@ void BTHome::addMeasurement_state(uint8_t sensor_id, uint8_t state, uint8_t step
       this->m_sensorDataIdx++;
     }
     if (!this->m_sortEnable) {
-      if (sensor_id < this->last_object_id) this->m_sortEnable = true;
+      if (sensor_id < this->m_lastObjectId) this->m_sortEnable = true;
     }
-    last_object_id = sensor_id;
+    m_lastObjectId = sensor_id;
   }
   else {
     sendPacket();
@@ -95,9 +95,9 @@ void BTHome::addMeasurement(uint8_t sensor_id, uint64_t value) {
       this->m_sensorDataIdx++;
     }
     if (!this->m_sortEnable) {
-      if (sensor_id < this->last_object_id) this->m_sortEnable = true;
+      if (sensor_id < this->m_lastObjectId) this->m_sortEnable = true;
     }
-    last_object_id = sensor_id;
+    m_lastObjectId = sensor_id;
   }
   else {
     sendPacket();
@@ -118,9 +118,9 @@ void BTHome::addMeasurement(uint8_t sensor_id, float value) {
       this->m_sensorDataIdx++;
     }
     if (!this->m_sortEnable) {
-      if (sensor_id < this->last_object_id) this->m_sortEnable = true;
+      if (sensor_id < this->m_lastObjectId) this->m_sortEnable = true;
     }
-    last_object_id = sensor_id;
+    m_lastObjectId = sensor_id;
   }
   else {
     sendPacket();
@@ -144,9 +144,9 @@ void BTHome::addMeasurement(uint8_t sensor_id, uint8_t *value, uint8_t size) {
       this->m_sensorDataIdx++;
     }
     if (!this->m_sortEnable) {
-      if (sensor_id < this->last_object_id) this->m_sortEnable = true;
+      if (sensor_id < this->m_lastObjectId) this->m_sortEnable = true;
     }
-    last_object_id = sensor_id;
+    m_lastObjectId = sensor_id;
   }
   else {
     sendPacket();
@@ -321,10 +321,10 @@ void BTHome::buildPacket() {
   pAdvertising->setAdvertisementData(oAdvertisementData);
 
   //fill the local name into oScanResponseData
-  if (!this->dev_name.isEmpty()) {
-    int dn_length = this->dev_name.length() + 1;
+  if (!this->m_devName.isEmpty()) {
+    int dn_length = this->m_devName.length() + 1;
     if (dn_length > 28) dn_length = 28;//BLE_ADVERT_MAX_LEN - FLAG = 31 - 3
-    oScanResponseData.setName(this->dev_name.substring(0, dn_length - 1).c_str());
+    oScanResponseData.setName(this->m_devName.substring(0, dn_length - 1).c_str());
   }
   pAdvertising->setScanResponseData(oScanResponseData);
 
@@ -415,6 +415,7 @@ uint8_t BTHome::getByteNumber(uint8_t sens) {
     case ID_GAS4:
     case ID_VOLUME:
     case ID_WATER:
+    case ID_TIMESTAMP:
       return 4; break;
     default:
       return 2;

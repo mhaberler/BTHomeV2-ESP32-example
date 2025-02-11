@@ -78,6 +78,7 @@
 #define ID_VOLUMEFR 0x49
 #define ID_UV 0x46
 #define ID_WATER 0x4F
+#define ID_TIMESTAMP 0x50
 #define ID_TEXT 0x53
 #define ID_RAW 0x54
 
@@ -149,12 +150,12 @@ class BTHome {
     uint8_t m_sensorDataIdx;
     byte m_sensorData[MEASUREMENT_MAX_LEN] = {0};
     void sortSensorData();
-    String dev_name;
+    String m_devName;
     bool m_encryptEnable;
     bool m_triggerdevice;
     uint32_t m_encryptCount;
     mbedtls_ccm_context m_encryptCTX;
-    uint8_t bindKey[BIND_KEY_LEN];
+    uint8_t m_bindKey[BIND_KEY_LEN];
     bool m_sortEnable;
-    byte last_object_id;
+    byte m_lastObjectId;
 };
