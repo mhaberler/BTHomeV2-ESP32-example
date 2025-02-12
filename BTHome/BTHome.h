@@ -15,7 +15,7 @@
 #define NONCE_LEN 13
 #define MIC_LEN 4
 
-//https://bthome.io/format/
+// https://bthome.io/format/
 // Advertising Data (AD) elements
 // Each element contains the following:
 //    1st byte: length of the element (excluding the length byte itself)
@@ -152,7 +152,7 @@ class BTHome {
     void sortSensorData();
     String m_devName;
     bool m_encryptEnable;
-    bool m_triggerdevice;
+    bool m_triggerDevice;
     uint32_t m_encryptCount;
     mbedtls_ccm_context m_encryptCTX;
     uint8_t m_bindKey[BIND_KEY_LEN];

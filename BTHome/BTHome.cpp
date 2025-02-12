@@ -5,7 +5,7 @@
 #include <NimBLEDevice.h>   // v2.x
 #include "BTHome.h"
 
-static BLEAdvertising *pAdvertising;    // From NimBLE
+static BLEAdvertising *pAdvertising;    // From NimBLE : BLEAdvertising = NimBLEAdvertising
 
 // Note: the BTHome class is declared in the header file
 
@@ -47,13 +47,14 @@ void BTHome::begin(String dname, bool encryption, uint8_t const* const key, bool
     this->m_encryptEnable = false;
   }
 
-  this->m_triggerdevice = trigger_based_device;
+  this->m_triggerDevice = trigger_based_device;
   resetMeasurement();
 }
 
 void BTHome::setDeviceName(String dname) {
-  if (!dname.isEmpty())
+  if (!dname.isEmpty()) {
     this->m_devName = dname;
+  }
 }
 
 void BTHome::resetMeasurement() {
@@ -73,11 +74,12 @@ void BTHome::addMeasurement_state(uint8_t sensor_id, uint8_t state, uint8_t step
       this->m_sensorDataIdx++;
     }
     if (!this->m_sortEnable) {
-      if (sensor_id < this->m_lastObjectId) this->m_sortEnable = true;
+      if (sensor_id < this->m_lastObjectId) {
+        this->m_sortEnable = true;
+      }
     }
     m_lastObjectId = sensor_id;
-  }
-  else {
+  } else {
     sendPacket();
     addMeasurement_state(sensor_id, state, steps);
   }
@@ -89,17 +91,17 @@ void BTHome::addMeasurement(uint8_t sensor_id, uint64_t value) {
   if ((this->m_sensorDataIdx + size + 1) <= (MEASUREMENT_MAX_LEN - (this->m_encryptEnable ? 8 : 0))) {
     this->m_sensorData[this->m_sensorDataIdx] = static_cast<byte>(sensor_id & 0xff);
     this->m_sensorDataIdx++;
-    for (uint8_t i = 0; i < size; i++)
-    {
+    for (uint8_t i = 0; i < size; i++) {
       this->m_sensorData[this->m_sensorDataIdx] = static_cast<byte>(((value * factor) >> (8 * i)) & 0xff);
       this->m_sensorDataIdx++;
     }
     if (!this->m_sortEnable) {
-      if (sensor_id < this->m_lastObjectId) this->m_sortEnable = true;
+      if (sensor_id < this->m_lastObjectId) {
+        this->m_sortEnable = true;
+      }
     }
     m_lastObjectId = sensor_id;
-  }
-  else {
+  } else {
     sendPacket();
     addMeasurement(sensor_id, value);
   }
@@ -112,17 +114,17 @@ void BTHome::addMeasurement(uint8_t sensor_id, float value) {
     uint64_t value2 = static_cast<uint64_t>(value * factor);
     this->m_sensorData[this->m_sensorDataIdx] = static_cast<byte>(sensor_id & 0xff);
     this->m_sensorDataIdx++;
-    for (uint8_t i = 0; i < size; i++)
-    {
+    for (uint8_t i = 0; i < size; i++) {
       this->m_sensorData[this->m_sensorDataIdx] = static_cast<byte>((value2 >> (8 * i)) & 0xff);
       this->m_sensorDataIdx++;
     }
     if (!this->m_sortEnable) {
-      if (sensor_id < this->m_lastObjectId) this->m_sortEnable = true;
+      if (sensor_id < this->m_lastObjectId) {
+        this->m_sortEnable = true;
+      }
     }
     m_lastObjectId = sensor_id;
-  }
-  else {
+  } else {
     sendPacket();
     addMeasurement(sensor_id, value);
   }
@@ -138,17 +140,17 @@ void BTHome::addMeasurement(uint8_t sensor_id, uint8_t *value, uint8_t size) {
     this->m_sensorData[this->m_sensorDataIdx] = static_cast<byte>(size & 0xff);
     this->m_sensorDataIdx++;
     // Add data bytes
-    for (uint8_t i = 0; i < size; i++)
-    {
+    for (uint8_t i = 0; i < size; i++) {
       this->m_sensorData[this->m_sensorDataIdx] = static_cast<byte>(value[i] & 0xff);
       this->m_sensorDataIdx++;
     }
     if (!this->m_sortEnable) {
-      if (sensor_id < this->m_lastObjectId) this->m_sortEnable = true;
+      if (sensor_id < this->m_lastObjectId) {
+        this->m_sortEnable = true;
+      }
     }
     m_lastObjectId = sensor_id;
-  }
-  else {
+  } else {
     sendPacket();
     addMeasurement(sensor_id, value, size);
   }
@@ -172,12 +174,12 @@ void BTHome::sortSensorData() {
     data_block_num++;
     //copy the data length
     if (this->m_sensorData[j] == EVENT_DIMMER) {
-      if (this->m_sensorData[j + 1] == EVENT_DIMMER_NONE)
+      if (this->m_sensorData[j + 1] == EVENT_DIMMER_NONE) {
         data_block[i].data_len = 1;
-      else
+      } else {
         data_block[i].data_len = 2;
-    }
-    else {
+      }
+    } else {
       data_block[i].data_len = getByteNumber(this->m_sensorData[j]);
     }
     //copy the data
@@ -214,7 +216,9 @@ void BTHome::buildPacket() {
   //the Object ids have to be applied in numerical order (from low to high)
   Serial.println("Building the BTHome packet...");
 
-  if (this->m_sortEnable) sortSensorData();
+  if (this->m_sortEnable) {
+    sortSensorData();
+  }
 
   // Create the BLE Device
   BLEAdvertisementData oAdvertisementData = BLEAdvertisementData();
@@ -259,10 +263,11 @@ void BTHome::buildPacket() {
 
   // The encryption
   if (this->m_encryptEnable) {
-    if (this->m_triggerdevice)
+    if (this->m_triggerDevice) {
       serviceData += ENCRYPT_TRIGGER_BASE;
-    else
+    } else {
       serviceData += ENCRYPT;
+    }
     uint8_t ciphertext[BLE_ADVERT_MAX_LEN];
     uint8_t encryptionTag[MIC_LEN];
     //buildNonce
@@ -285,8 +290,7 @@ void BTHome::buildPacket() {
     mbedtls_ccm_encrypt_and_tag(&this->m_encryptCTX, this->m_sensorDataIdx, nonce, NONCE_LEN, 0, 0,
                                 &this->m_sensorData[0], &ciphertext[0], encryptionTag,
                                 MIC_LEN);
-    for (i = 0; i < this->m_sensorDataIdx; i++)
-    {
+    for (i = 0; i < this->m_sensorDataIdx; i++) {
       serviceData += ciphertext[i];
     }
     //writeCounter
@@ -300,14 +304,13 @@ void BTHome::buildPacket() {
     serviceData += encryptionTag[1];
     serviceData += encryptionTag[2];
     serviceData += encryptionTag[3];
-  }
-  else {
-    if (this->m_triggerdevice)
+  } else {
+    if (this->m_triggerDevice) {
       serviceData += NO_ENCRYPT_TRIGGER_BASE;
-    else
+    } else {
       serviceData += NO_ENCRYPT;
-    for (i = 0; i < this->m_sensorDataIdx; i++)
-    {
+    }
+    for (i = 0; i < this->m_sensorDataIdx; i++) {
       serviceData += this->m_sensorData[i]; // Add the sensor data to the Service Data
     }
   }
@@ -323,7 +326,9 @@ void BTHome::buildPacket() {
   //fill the local name into oScanResponseData
   if (!this->m_devName.isEmpty()) {
     int dn_length = this->m_devName.length() + 1;
-    if (dn_length > 28) dn_length = 28;//BLE_ADVERT_MAX_LEN - FLAG = 31 - 3
+    if (dn_length > 28) {  //BLE_ADVERT_MAX_LEN - FLAG = 31 - 3
+      dn_length = 28;
+    }
     oScanResponseData.setName(this->m_devName.substring(0, dn_length - 1).c_str());
   }
   pAdvertising->setScanResponseData(oScanResponseData);
@@ -355,7 +360,7 @@ void BTHome::sendPacket(uint32_t delay_ms) {
   */
   if (this->m_sensorDataIdx > 0) {
     buildPacket();
-    if (!isAdvertising()){
+    if (!isAdvertising()) {
       // Start advertising
       start();
     } 
