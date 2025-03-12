@@ -1,3 +1,5 @@
+#ifndef BTHOME_H
+#define BTHOME_H
 /*
   BTHome Header file
 
@@ -159,3 +161,4 @@ class BTHome {
     bool m_sortEnable;
     byte m_lastObjectId;
 };
+#endif // BTHOME_H
