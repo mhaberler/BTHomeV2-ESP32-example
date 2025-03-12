@@ -17,7 +17,9 @@
 
 // Change the bind key any string of 32 hex characters (a-f, 0-9).
 // The Home Assistant BTHome integration will autodiscover your device and will ask you to enter this bind key.
-String BIND_KEY = "431d39c1d7cc1ac1aef224cd096db934"; 
+String BIND_KEY = "431d39c1d7cc1ac1aef224cd096db934";  // consider defining it as const object, to be tested.
+// Consider renaming it ENCRYPTION_KEY like BTHome does:
+// const String ENCRYPTION_KEY = "431d39c1d7cc1ac1aef224cd096db934";
 
 // Create a global instance of the BTHome class
 BTHome bthome;
