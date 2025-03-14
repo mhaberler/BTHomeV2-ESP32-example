@@ -15,7 +15,7 @@ void BTHome::begin(String dname, bool encryption, String key, bool trigger_based
   */
   uint8_t bind_key[BIND_KEY_LEN];
   for (uint8_t i = 0; i < BIND_KEY_LEN; i++) {
-    bind_key[i] = strtol(key.substring(i * 2, i * 2 + 2).c_str(), NULL, BIND_KEY_LEN);
+    bind_key[i] = strtol(key.substring(i * 2, i * 2 + 2).c_str(), NULL, BIND_KEY_BASE);
   }
   begin(dname, encryption, bind_key, trigger_based_device);
 }
