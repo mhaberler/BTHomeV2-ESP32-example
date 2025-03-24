@@ -8,14 +8,13 @@
 static BLEAdvertising *pAdvertising;    // From NimBLE : BLEAdvertising = NimBLEAdvertising
 
 // Note: the BTHome class is declared in the header file
-
 void BTHome::begin(String dname, bool encryption, String key, bool trigger_based_device) {
   /*
     The 'begin' method of the BTHome class, used where a String encryption key is provided
   */
   uint8_t bind_key[BIND_KEY_LEN];
   for (uint8_t i = 0; i < BIND_KEY_LEN; i++) {
-    bind_key[i] = strtol(key.substring(i * 2, i * 2 + 2).c_str(), NULL, BIND_KEY_BASE);
+    bind_key[i] = strtol(key.substring(i * 2, i * 2 + 2).c_str(), NULL, 16);
   }
   begin(dname, encryption, bind_key, trigger_based_device);
 }

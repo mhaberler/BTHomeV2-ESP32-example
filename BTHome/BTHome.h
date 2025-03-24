@@ -14,7 +14,6 @@
 #define BLE_ADVERT_MAX_LEN 31
 #define MEASUREMENT_MAX_LEN 23 //23=31(BLE_ADVERT_MAX_LEN)-3(FLAG)-1(SERVICE_DATA)-2(UUID)-1(ENCRYPT)-1(serviceData length bit)
 #define BIND_KEY_LEN 16   // stabilisce la lunghezza dell’array bind_key[]
-#define BIND_KEY_BASE 16  // fissa su hex la base dei valori da salvare in BIND_KEY
 #define NONCE_LEN 13
 #define MIC_LEN 4
 
