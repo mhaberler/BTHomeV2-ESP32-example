@@ -3,6 +3,7 @@
 
   Include the BTHome class declaration
 */
+#include <Arduino.h>
 #include "mbedtls/ccm.h"    // Provides an API for the CCM authenticated encryption mode for block ciphers.
 
 #if defined(ESP32)

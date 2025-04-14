@@ -1,2 +1,4 @@
 # Macos
 .DS_Store
+.pio
+.vscode

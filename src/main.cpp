@@ -17,7 +17,7 @@
 
 // Change the bind key any string of 32 hex characters (a-f, 0-9).
 // The Home Assistant BTHome integration will autodiscover your device and will ask you to enter this bind key.
-String BIND_KEY = "431d39c1d7cc1ac1aef224cd096db934"; 
+String BIND_KEY = "431d39c1d7cc1ac1aef224cd096db934";
 
 // Create a global instance of the BTHome class
 BTHome bthome;
@@ -68,7 +68,7 @@ void loop() {
   bthome.addMeasurement(ID_HUMIDITY_PRECISE, 70.00f);//3
   bthome.addMeasurement(ID_PRESSURE, 1000.86f);//4
   bthome.addMeasurement(ID_ILLUMINANCE, 1008.81f);//4 bytes
-  bthome.buildPaket();
+  bthome.buildPacket();
   bthome.start();//start the first adv data
   delay(1500);
 
@@ -78,7 +78,7 @@ void loop() {
   bthome.addMeasurement(ID_TVOC, (uint64_t)220);//3
   bthome.addMeasurement_state(EVENT_BUTTON, EVENT_BUTTON_PRESS);//2, button press
   bthome.addMeasurement_state(EVENT_DIMMER, EVENT_DIMMER_RIGHT, 6); //3, rotate right 6 steps
-  bthome.buildPaket();//change the adv data
+  bthome.buildPacket();//change the adv data
   delay(1500);
   bthome.stop();
 
