@@ -13,7 +13,7 @@
 #define DEVICE_NAME "DIY-sensor"  // The name of the sensor
 // #define DEVICE_NAME_LENGTH (sizeof(DEVICE_NAME) - 1)
 
-#define ENABLE_ENCRYPT // Remove this line for no encryption
+// #define ENABLE_ENCRYPT // Remove this line for no encryption
 
 // Change the bind key any string of 32 hex characters (a-f, 0-9).
 // The Home Assistant BTHome integration will autodiscover your device and will ask you to enter this bind key.
@@ -34,6 +34,7 @@ void setup() {
 }
 
 void loop() {
+  // bthome.setDeviceName(DEVICE_NAME);
   //MEASUREMENT_MAX_LEN = 23, ENABLE_ENCRYPT will use extra 8 bytes, so each Measurement should smaller than 15
 
   // 1st method: just addMeasurement as much as you can, the code will split and send the adv packet automatically
@@ -41,6 +42,7 @@ void loop() {
   bthome.resetMeasurement();
   // bthome.addMeasurement(sensorid, value) you can use the sensorids from the BTHome.h file
   // *** The Object ids of addMeasurement have to be applied in numerical order (from low to high) in your advertisement ***
+
   bthome.addMeasurement(ID_TEMPERATURE_PRECISE, 35.00f);//3
   bthome.addMeasurement(ID_HUMIDITY_PRECISE, 40.00f);//3
   bthome.addMeasurement(ID_PRESSURE, 1023.86f);//4
@@ -52,7 +54,7 @@ void loop() {
   bthome.addMeasurement_state(EVENT_DIMMER, EVENT_DIMMER_RIGHT, 6); //3, rotate right 6 steps
 
   // TEXT data
-  String msg = "Sensor XYZ";
+  String msg = "ABC";
   bthome.addMeasurement(ID_TEXT, (uint8_t *)msg.c_str(), msg.length());
 
   // RAW data
@@ -62,6 +64,7 @@ void loop() {
   bthome.sendPacket();
   bthome.stop();
 
+  #if 0
   // 2nd method: make sure each measurement data length <=15 and start(stop) manually
   bthome.resetMeasurement();
   bthome.addMeasurement(ID_TEMPERATURE_PRECISE, 26.00f);//3
@@ -81,7 +84,7 @@ void loop() {
   bthome.buildPacket();//change the adv data
   delay(1500);
   bthome.stop();
-
+#endif
   delay(10000);
 }
 
