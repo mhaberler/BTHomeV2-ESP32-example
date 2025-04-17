@@ -9,6 +9,7 @@
 #if defined(ESP32)
     #include "esp_random.h"   // Expressif library to generate et one random 32-bit word from hardware
 #endif
+#include <NimBLEDevice.h>
 
 #define BLE_ADVERT_MAX_LEN 31
 #define MEASUREMENT_MAX_LEN 23 //23=31(BLE_ADVERT_MAX_LEN)-3(FLAG)-1(SERVICE_DATA)-2(UUID)-1(ENCRYPT)-1(serviceData length bit)
@@ -27,6 +28,7 @@
 #define FLAG2 0x01
 #define FLAG3 0x06
 #define UUID 0xD2FC
+#define BTHOMEV2_UUID "FCD2"
 #define UUID1 0xD2      // UUID first byte
 #define UUID2 0xFC      // UUID second byte
 #define SERVICE_DATA 0x16
@@ -169,4 +171,6 @@ class BTHome {
     bool m_addMac;
     bool m_addPacketId;
     byte last_object_id;
+    NimBLEExtAdvertising *m_pAdvertising;
+    NimBLEExtAdvertisement *m_advData;
 };

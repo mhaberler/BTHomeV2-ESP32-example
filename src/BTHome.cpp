@@ -2,10 +2,13 @@
   BTHome features
 */
 #include <Arduino.h>
-#include <NimBLEDevice.h>   // v2.x
 #include "BTHome.h"
+#include "appearance.hpp"
 
-static BLEAdvertising *pAdvertising;    // From NimBLE
+// static NimBLEExtAdvertising *pAdvertising;
+// static NimBLEExtAdvertisement *advData;
+
+
 
 // Note: the BTHome class is declared in the header file
 
@@ -29,7 +32,8 @@ void BTHome::begin(String dname, bool encryption, uint8_t const* const key, bool
 
     */
     BLEDevice::init("");
-    pAdvertising = BLEDevice::getAdvertising();
+    m_pAdvertising = BLEDevice::getAdvertising();
+    m_advData = new NimBLEExtAdvertisement(BLE_HCI_LE_PHY_1M, BLE_HCI_LE_PHY_2M);
 
     setDeviceName(dname);
 
@@ -210,8 +214,8 @@ void BTHome::buildPacket() {
     if (this->m_sortEnable) sortSensorData();
 
     // Create the BLE Device
-    BLEAdvertisementData oAdvertisementData = BLEAdvertisementData();
-    BLEAdvertisementData oScanResponseData = BLEAdvertisementData();
+    // NimBLEExtAdvertisement oAdvertisementData = NimBLEExtAdvertisement();
+    // NimBLEExtAdvertisement oScanResponseData = NimBLEExtAdvertisement();
 
     std::string payloadData = "";
     std::string serviceData = "";
@@ -221,30 +225,6 @@ void BTHome::buildPacket() {
     payloadData += FLAG1;
     payloadData += FLAG2;
     payloadData += FLAG3;
-    //local name: move to the response packet
-    /*
-      if (!device_name.isEmpty()) {
-      int dn_length = device_name.length() + 1;
-      if (this->m_encryptEnable) {
-        //deal with the device name to make sure the adv length <= 31
-        //18=3(FLAG)+1(device name length bit)+1(COMPLETE_NAME)+1(SERVICE_DATA)+2(UUID)+1(ENCRYPT)+4(nonce)+4(mic)+1(serviceData length bit)
-        if (dn_length > BLE_ADVERT_MAX_LEN - this->m_sensorDataIdx - 18)
-          dn_length = BLE_ADVERT_MAX_LEN - this->m_sensorDataIdx - 18;
-      }
-      else {
-        //10=3(FLAG)+1(device name length bit)+1(COMPLETE_NAME)+1(SERVICE_DATA)+2(UUID)+1(ENCRYPT)+1(serviceData length bit)
-        if (dn_length > BLE_ADVERT_MAX_LEN - this->m_sensorDataIdx - 10)
-          dn_length = BLE_ADVERT_MAX_LEN - this->m_sensorDataIdx - 10;
-      }
-      byte len_buf = dn_length;
-      char str_buf[dn_length];
-      //chop the device name if needed
-      device_name.substring(0, dn_length - 1).toCharArray(str_buf, dn_length);
-      payloadData += len_buf;         // Add the length of the Name
-      payloadData += COMPLETE_NAME;   // Complete_Name: Complete local name -- Short_Name: Shortened Name
-      payloadData += str_buf;         // Add the Name to the payload
-      }
-    */
 
     serviceData += SERVICE_DATA;  // DO NOT CHANGE -- Service Data - 16-bit UUID
     serviceData += UUID1;  // DO NOT CHANGE -- UUID
@@ -323,17 +303,26 @@ void BTHome::buildPacket() {
     payloadData += sd_length;         // Add the length of the Service Data
     payloadData += serviceData;             // Finalize the packet
 
-    std::vector<uint8_t> payloadData_vector(payloadData.begin(), payloadData.end());
-    oAdvertisementData.addData(payloadData_vector);
-    pAdvertising->setAdvertisementData(oAdvertisementData);
+    // std::vector<uint8_t> payloadData_vector(payloadData.begin(), payloadData.end());
 
-    //fill the local name into oScanResponseData
-    if (!this->dev_name.isEmpty()) {
-        int dn_length = this->dev_name.length() + 1;
-        if (dn_length > 28) dn_length = 28;//BLE_ADVERT_MAX_LEN - FLAG = 31 - 3
-        oScanResponseData.setName(this->dev_name.substring(0, dn_length - 1).c_str());
-    }
-    pAdvertising->setScanResponseData(oScanResponseData);
+    m_advData->clearData();
+
+    m_advData->addData(payloadData);
+    m_advData->setCompleteServices16({NimBLEUUID(BTHOMEV2_UUID)});
+    m_advData->setName(dev_name.c_str());
+    m_advData->setFlags(BLE_HS_ADV_F_BREDR_UNSUP | BLE_HS_ADV_F_DISC_GEN);
+    m_advData->setAppearance(BLE_APPEARANCE_GENERIC_THERMOMETER);
+    m_advData->setLegacyAdvertising(false);
+
+    m_pAdvertising->setInstanceData(0, *m_advData);
+
+    // //fill the local name into oScanResponseData
+    // if (!this->dev_name.isEmpty()) {
+    //     int dn_length = this->dev_name.length() + 1;
+    //     if (dn_length > 28) dn_length = 28;//BLE_ADVERT_MAX_LEN - FLAG = 31 - 3
+    //     oScanResponseData.setName(this->dev_name.substring(0, dn_length - 1).c_str());
+    // }
+    // pAdvertising->setScanResponseData(oScanResponseData);
 
     /**  pAdvertising->setAdvertisementType(ADV_TYPE_NONCONN_IND);
          Advertising mode. Can be one of following constants:
@@ -341,19 +330,19 @@ void BTHome::buildPacket() {
        - BLE_GAP_CONN_MODE_DIR (directed-connectable; 3.C.9.3.3).
        - BLE_GAP_CONN_MODE_UND (undirected-connectable; 3.C.9.3.4).
     */
-    pAdvertising->setConnectableMode(BLE_GAP_CONN_MODE_NON);
+    // pAdvertising->setConnectableMode(BLE_GAP_CONN_MODE_NON);
 }
 
 void BTHome::stop() {
-    pAdvertising->stop();
+    m_pAdvertising->stop();
 }
 
 void BTHome::start(uint32_t duration) {
-    pAdvertising->start(duration);
+    m_pAdvertising->start(0, duration);
 }
 
 bool BTHome::isAdvertising() {
-    return pAdvertising->isAdvertising();
+    return m_pAdvertising->isAdvertising();
 }
 
 void BTHome::sendPacket(uint32_t delay_ms) {
