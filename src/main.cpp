@@ -21,6 +21,7 @@ String BIND_KEY = "431d39c1d7cc1ac1aef224cd096db934";
 
 // Create a global instance of the BTHome class
 BTHome bthome;
+uint8_t packetId;
 
 void setup() {
   Serial.begin(115200);
@@ -43,6 +44,7 @@ void loop() {
   // bthome.addMeasurement(sensorid, value) you can use the sensorids from the BTHome.h file
   // *** The Object ids of addMeasurement have to be applied in numerical order (from low to high) in your advertisement ***
 
+  bthome.addMeasurement(ID_PACKET, (uint64_t)packetId++);
   bthome.addMeasurement(ID_TEMPERATURE_PRECISE, 35.00f);//3
   bthome.addMeasurement(ID_HUMIDITY_PRECISE, 40.00f);//3
   bthome.addMeasurement(ID_PRESSURE, 1023.86f);//4
