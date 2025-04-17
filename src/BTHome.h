@@ -11,8 +11,8 @@
 #endif
 #include <NimBLEDevice.h>
 
-#define BLE_ADVERT_MAX_LEN 31
-#define MEASUREMENT_MAX_LEN 23 //23=31(BLE_ADVERT_MAX_LEN)-3(FLAG)-1(SERVICE_DATA)-2(UUID)-1(ENCRYPT)-1(serviceData length bit)
+#define BLE_ADVERT_MAX_LEN 251
+#define MEASUREMENT_MAX_LEN 241 //23=31(BLE_ADVERT_MAX_LEN)-3(FLAG)-1(SERVICE_DATA)-2(UUID)-1(ENCRYPT)-1(serviceData length bit)
 #define BIND_KEY_LEN 16
 #define NONCE_LEN 13
 #define MIC_LEN 4
@@ -147,7 +147,7 @@ class BTHome {
     void start(uint32_t duration = 0);
     void stop();
     bool isAdvertising();
-    void resetMeasurement(uint8_t packet_id = 0);
+    void resetMeasurement();
     void sendPacket(uint32_t delay_ms = 1500);
     void addMeasurement_state(uint8_t sensor_id, uint8_t state, uint8_t steps = 0);
     void addMeasurement(uint8_t sensor_id, uint64_t value);

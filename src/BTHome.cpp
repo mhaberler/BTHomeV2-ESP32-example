@@ -62,7 +62,7 @@ void BTHome::setDeviceName(String dname) {
         this->dev_name = dname;
 }
 
-void BTHome::resetMeasurement(uint8_t packet_id ) {
+void BTHome::resetMeasurement() {
     this->m_sensorDataIdx = 0;
     this->last_object_id = 0;
     this->m_sortEnable = false;
@@ -222,13 +222,13 @@ void BTHome::buildPacket() {
     uint8_t i;
 
     //head
-    payloadData += FLAG1;
-    payloadData += FLAG2;
-    payloadData += FLAG3;
+    // payloadData += FLAG1;
+    // payloadData += FLAG2;
+    // payloadData += FLAG3;
 
-    serviceData += SERVICE_DATA;  // DO NOT CHANGE -- Service Data - 16-bit UUID
-    serviceData += UUID1;  // DO NOT CHANGE -- UUID
-    serviceData += UUID2;  // DO NOT CHANGE -- UUID
+    // serviceData += SERVICE_DATA;  // DO NOT CHANGE -- Service Data - 16-bit UUID
+    // serviceData += UUID1;  // DO NOT CHANGE -- UUID
+    // serviceData += UUID2;  // DO NOT CHANGE -- UUID
 
     uint8_t adv_info = BTHOME_V2;
     if (this->m_addMac)
@@ -299,22 +299,31 @@ void BTHome::buildPacket() {
         }
     }
 
-    byte sd_length = serviceData.length(); // Generate the length of the Service Data
-    payloadData += sd_length;         // Add the length of the Service Data
-    payloadData += serviceData;             // Finalize the packet
+    // byte sd_length = serviceData.length(); // Generate the length of the Service Data
+    // payloadData += sd_length;         // Add the length of the Service Data
+    // payloadData += serviceData;             // Finalize the packet
 
+
+    log_i("serviceData: pid=%u len %u %s", packetId, serviceData.length(), NimBLEUtils::dataToHexString((uint8_t *)serviceData.c_str(),
+    serviceData.length()).c_str());
     // std::vector<uint8_t> payloadData_vector(payloadData.begin(), payloadData.end());
 
     m_advData->clearData();
-
-    m_advData->addData(payloadData);
-    m_advData->setCompleteServices16({NimBLEUUID(BTHOMEV2_UUID)});
-    m_advData->setName(dev_name.c_str());
-    m_advData->setFlags(BLE_HS_ADV_F_BREDR_UNSUP | BLE_HS_ADV_F_DISC_GEN);
-    m_advData->setAppearance(BLE_APPEARANCE_GENERIC_THERMOMETER);
+    m_advData->setScannable(true);
+    m_advData->setConnectable(false);
     m_advData->setLegacyAdvertising(false);
 
+    // m_advData->addData(payloadData);
+    m_advData->addServiceUUID({NimBLEUUID(BTHOMEV2_UUID)});
+
+    m_advData->setName(dev_name.c_str());
+    // m_advData->setFlags(BLE_HS_ADV_F_BREDR_UNSUP | BLE_HS_ADV_F_DISC_GEN);
+    m_advData->setAppearance(BLE_APPEARANCE_GENERIC_THERMOMETER);
+
+    m_advData->setServiceData(NimBLEUUID(BTHOMEV2_UUID), serviceData);
+
     m_pAdvertising->setInstanceData(0, *m_advData);
+    m_pAdvertising->setScanResponseData(0, *m_advData);
 
     // //fill the local name into oScanResponseData
     // if (!this->dev_name.isEmpty()) {
@@ -338,7 +347,8 @@ void BTHome::stop() {
 }
 
 void BTHome::start(uint32_t duration) {
-    m_pAdvertising->start(0, duration);
+    // m_pAdvertising->start(0, duration);
+    m_pAdvertising->start(0, 0, 2);
 }
 
 bool BTHome::isAdvertising() {
