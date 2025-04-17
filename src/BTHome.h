@@ -7,7 +7,7 @@
 #include "mbedtls/ccm.h"    // Provides an API for the CCM authenticated encryption mode for block ciphers.
 
 #if defined(ESP32)
-  #include "esp_random.h"   // Expressif library to generate et one random 32-bit word from hardware
+    #include "esp_random.h"   // Expressif library to generate et one random 32-bit word from hardware
 #endif
 
 #define BLE_ADVERT_MAX_LEN 31
@@ -35,6 +35,12 @@
 #define NO_ENCRYPT_TRIGGER_BASE 0x44
 #define ENCRYPT 0x41
 #define ENCRYPT_TRIGGER_BASE 0x45
+
+#define BTHOME_V2 0x40
+
+#define ADD_ENCRYPT 0x01
+#define ADD_MAC_ADDR 0x02
+#define ADD_TRIGGER 0x04
 
 // Local Name
 #define SHORT_NAME 0x08
@@ -130,19 +136,22 @@
 
 class BTHome {
   public:
-    void begin(String dname = "DIY-sensor", bool encryption = false, String key = "", bool trigger_based_device = false);
-    void begin(String dname = "DIY-sensor", bool encryption = false, uint8_t const* const key = NULL, bool trigger_based_device = false);
+    void begin(String dname = "DIY-sensor", bool encryption = false, String key = "",
+               bool trigger_based_device = false, bool add_mac = false, bool add_packetId = false);
+    void begin(String dname = "DIY-sensor", bool encryption = false,
+               uint8_t const* const key = NULL, bool trigger_based_device = false, bool add_mac = false, bool add_packetId = false);
     void setDeviceName(String dname = "");
     void buildPacket();
     void start(uint32_t duration = 0);
     void stop();
     bool isAdvertising();
-    void resetMeasurement();
+    void resetMeasurement(uint8_t packet_id = 0);
     void sendPacket(uint32_t delay_ms = 1500);
     void addMeasurement_state(uint8_t sensor_id, uint8_t state, uint8_t steps = 0);
     void addMeasurement(uint8_t sensor_id, uint64_t value);
     void addMeasurement(uint8_t sensor_id, float value);
     void addMeasurement(uint8_t sensor_id, uint8_t *value, uint8_t size);
+    uint8_t packetId;
 
   private:
     uint8_t getByteNumber(uint8_t sens);
@@ -157,5 +166,7 @@ class BTHome {
     mbedtls_ccm_context m_encryptCTX;
     uint8_t bindKey[BIND_KEY_LEN];
     bool m_sortEnable;
+    bool m_addMac;
+    bool m_addPacketId;
     byte last_object_id;
 };
