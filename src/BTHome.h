@@ -31,10 +31,10 @@
 #define UUID2 0xFC      // UUID second byte
 #define SERVICE_DATA 0x16
 
-#define NO_ENCRYPT 0x40
-#define NO_ENCRYPT_TRIGGER_BASE 0x44
-#define ENCRYPT 0x41
-#define ENCRYPT_TRIGGER_BASE 0x45
+// #define NO_ENCRYPT 0x40
+// #define NO_ENCRYPT_TRIGGER_BASE 0x44
+// #define ENCRYPT 0x41
+// #define ENCRYPT_TRIGGER_BASE 0x45
 
 #define BTHOME_V2 0x40
 

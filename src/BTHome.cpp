@@ -269,10 +269,8 @@ void BTHome::buildPacket() {
         serviceData += addrs->val[1];
         serviceData += addrs->val[0];
     }
-    if (this->m_addPacketId) {
-        serviceData += (char)ID_PACKET; // Add the packet ID to the Service Data
-        serviceData += packetId;
-    }
+
+
     // The encryption
     if (this->m_encryptEnable) {
         uint8_t ciphertext[BLE_ADVERT_MAX_LEN];
@@ -291,7 +289,7 @@ void BTHome::buildPacket() {
         //esp_read_mac(&nonce[0], ESP_MAC_BT);
         nonce[6] = UUID1;
         nonce[7] = UUID2;
-        nonce[8] = ENCRYPT;
+        nonce[8] = adv_info;
         memcpy(&nonce[9], countPtr, 4);
         //encrypt sensorData
         mbedtls_ccm_encrypt_and_tag(&this->m_encryptCTX, this->m_sensorDataIdx, nonce, NONCE_LEN, 0, 0,
@@ -312,6 +310,10 @@ void BTHome::buildPacket() {
         serviceData += encryptionTag[2];
         serviceData += encryptionTag[3];
     } else {
+        if (this->m_addPacketId) {
+            serviceData += (char)ID_PACKET; // Add the packet ID to the Service Data
+            serviceData += packetId;
+        }
         for (i = 0; i < this->m_sensorDataIdx; i++) {
             serviceData += this->m_sensorData[i]; // Add the sensor data to the Service Data
         }
