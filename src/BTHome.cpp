@@ -8,7 +8,23 @@
 // static NimBLEExtAdvertising *pAdvertising;
 // static NimBLEExtAdvertisement *advData;
 
+std::string mfd =
+"\x11\x47The quick brown fox jumps over the lazy dog"
+"The quick brown fox jumps over the lazy dog"
+"The quick brown fox jumps over the lazy dog"
+;
 
+/** Callback class to handle advertising events */
+class AdvCallbacks : public NimBLEExtAdvertisingCallbacks {
+    void onStopped(NimBLEExtAdvertising* pAdv, int reason, uint8_t instId) override {
+        log_i("Advertising instance %u stopped, reason = %d", instId, reason);
+    }
+
+    void onScanRequest(NimBLEExtAdvertising* pAdv, uint8_t instId, NimBLEAddress addr) override {
+        const char *ble_addr = addr.toString().c_str();
+        log_i("Scan request from %s for instance %u\n", ble_addr, instId);
+    }
+} advCallbacks;
 
 // Note: the BTHome class is declared in the header file
 
@@ -33,6 +49,10 @@ void BTHome::begin(String dname, bool encryption, uint8_t const* const key, bool
     */
     BLEDevice::init("");
     m_pAdvertising = BLEDevice::getAdvertising();
+    /** Set the callbacks to handle advertising events */
+    m_pAdvertising->setCallbacks(&advCallbacks);
+
+
     m_advData = new NimBLEExtAdvertisement(BLE_HCI_LE_PHY_1M, BLE_HCI_LE_PHY_2M); // BLE_HCI_LE_PHY_CODED
 
     setDeviceName(dname);
@@ -305,7 +325,7 @@ void BTHome::buildPacket() {
 
     const char *ble_addr = BLEDevice::getAddress().toString().c_str();
     log_i("serviceData: mac=%s pid=%u len %u %s", ble_addr, packetId, serviceData.length(), NimBLEUtils::dataToHexString((uint8_t *)serviceData.c_str(),
-    serviceData.length()).c_str());
+            serviceData.length()).c_str());
     // std::vector<uint8_t> payloadData_vector(payloadData.begin(), payloadData.end());
 
     m_advData->clearData();
@@ -313,11 +333,14 @@ void BTHome::buildPacket() {
     m_advData->setConnectable(false);
     m_advData->setLegacyAdvertising(false);
 
+    m_advData->setManufacturerData(mfd);
+    m_advData->setCompleteServices16({NimBLEUUID(BTHOMEV2_UUID)});
+
     // m_advData->addData(payloadData);
     m_advData->addServiceUUID({NimBLEUUID(BTHOMEV2_UUID)});
 
     m_advData->setName(dev_name.c_str());
-    // m_advData->setFlags(BLE_HS_ADV_F_BREDR_UNSUP | BLE_HS_ADV_F_DISC_GEN);
+    m_advData->setFlags(BLE_HS_ADV_F_BREDR_UNSUP | BLE_HS_ADV_F_DISC_GEN);
     m_advData->setAppearance(BLE_APPEARANCE_GENERIC_THERMOMETER);
 
     m_advData->setServiceData(NimBLEUUID(BTHOMEV2_UUID), serviceData);

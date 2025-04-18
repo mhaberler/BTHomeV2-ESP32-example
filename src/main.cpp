@@ -25,6 +25,7 @@ BTHome bthome;
 void setup() {
     Serial.begin(115200);
     delay(1000);
+    log_i("CONFIG_BT_NIMBLE_MAX_EXT_ADV_DATA_LEN=%d\n", CONFIG_BT_NIMBLE_MAX_EXT_ADV_DATA_LEN);
 
     log_i("Creating the BTHome BLE device..");
     bthome.packetId = 42;
