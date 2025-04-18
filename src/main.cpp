@@ -24,13 +24,17 @@ BTHome bthome;
 
 void setup() {
     Serial.begin(115200);
-    Serial.println("Creating the BTHome BLE device...");
+    delay(1000);
+
+    log_i("Creating the BTHome BLE device..");
     bthome.packetId = 42;
 #ifdef ENABLE_ENCRYPT
     bthome.begin(DEVICE_NAME, true, BIND_KEY, false);
 #else
     bthome.begin(DEVICE_NAME, false, "", false, true, true);
 #endif
+    const char *ble_addr = BLEDevice::getAddress().toString().c_str();
+    log_i("mac=%s", ble_addr);
 }
 
 void loop() {
