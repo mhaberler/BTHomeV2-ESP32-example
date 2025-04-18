@@ -33,7 +33,7 @@ void BTHome::begin(String dname, bool encryption, uint8_t const* const key, bool
     */
     BLEDevice::init("");
     m_pAdvertising = BLEDevice::getAdvertising();
-    m_advData = new NimBLEExtAdvertisement(BLE_HCI_LE_PHY_1M, BLE_HCI_LE_PHY_2M);
+    m_advData = new NimBLEExtAdvertisement(BLE_HCI_LE_PHY_1M, BLE_HCI_LE_PHY_2M); // BLE_HCI_LE_PHY_CODED
 
     setDeviceName(dname);
 
@@ -303,8 +303,8 @@ void BTHome::buildPacket() {
     // payloadData += sd_length;         // Add the length of the Service Data
     // payloadData += serviceData;             // Finalize the packet
 
-
-    log_i("serviceData: pid=%u len %u %s", packetId, serviceData.length(), NimBLEUtils::dataToHexString((uint8_t *)serviceData.c_str(),
+    const char *ble_addr = BLEDevice::getAddress().toString().c_str();
+    log_i("serviceData: mac=%s pid=%u len %u %s", ble_addr, packetId, serviceData.length(), NimBLEUtils::dataToHexString((uint8_t *)serviceData.c_str(),
     serviceData.length()).c_str());
     // std::vector<uint8_t> payloadData_vector(payloadData.begin(), payloadData.end());
 

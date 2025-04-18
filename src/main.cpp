@@ -33,8 +33,6 @@ void setup() {
 #else
     bthome.begin(DEVICE_NAME, false, "", false, true, true);
 #endif
-    const char *ble_addr = BLEDevice::getAddress().toString().c_str();
-    log_i("mac=%s", ble_addr);
 }
 
 void loop() {
