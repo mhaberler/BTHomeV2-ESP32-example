@@ -1,3 +1,5 @@
+#ifndef BTHOME_H
+#define BTHOME_H
 /*
   BTHome Header file
 
@@ -11,11 +13,11 @@
 
 #define BLE_ADVERT_MAX_LEN 31
 #define MEASUREMENT_MAX_LEN 23 //23=31(BLE_ADVERT_MAX_LEN)-3(FLAG)-1(SERVICE_DATA)-2(UUID)-1(ENCRYPT)-1(serviceData length bit)
-#define BIND_KEY_LEN 16
+#define BIND_KEY_LEN 16   // stabilisce la lunghezza dell’array bind_key[]
 #define NONCE_LEN 13
 #define MIC_LEN 4
 
-//https://bthome.io/format/
+// https://bthome.io/format/
 // Advertising Data (AD) elements
 // Each element contains the following:
 //    1st byte: length of the element (excluding the length byte itself)
@@ -78,6 +80,7 @@
 #define ID_VOLUMEFR 0x49
 #define ID_UV 0x46
 #define ID_WATER 0x4F
+#define ID_TIMESTAMP 0x50
 #define ID_TEXT 0x53
 #define ID_RAW 0x54
 
@@ -149,12 +152,13 @@ class BTHome {
     uint8_t m_sensorDataIdx;
     byte m_sensorData[MEASUREMENT_MAX_LEN] = {0};
     void sortSensorData();
-    String dev_name;
+    String m_devName;
     bool m_encryptEnable;
-    bool m_triggerdevice;
+    bool m_triggerDevice;
     uint32_t m_encryptCount;
     mbedtls_ccm_context m_encryptCTX;
-    uint8_t bindKey[BIND_KEY_LEN];
+    uint8_t m_bindKey[BIND_KEY_LEN];
     bool m_sortEnable;
-    byte last_object_id;
+    byte m_lastObjectId;
 };
+#endif // BTHOME_H

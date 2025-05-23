@@ -17,7 +17,9 @@
 
 // Change the bind key any string of 32 hex characters (a-f, 0-9).
 // The Home Assistant BTHome integration will autodiscover your device and will ask you to enter this bind key.
-String BIND_KEY = "431d39c1d7cc1ac1aef224cd096db934"; 
+String BIND_KEY = "431d39c1d7cc1ac1aef224cd096db934";  // consider defining it as const object, to be tested.
+// Consider renaming it ENCRYPTION_KEY like BTHome does:
+// const String ENCRYPTION_KEY = "431d39c1d7cc1ac1aef224cd096db934";
 
 // Create a global instance of the BTHome class
 BTHome bthome;
@@ -50,6 +52,9 @@ void loop() {
   bthome.addMeasurement(ID_TVOC, (uint64_t)350);//3
   bthome.addMeasurement_state(EVENT_BUTTON, EVENT_BUTTON_PRESS);//2 button press
   bthome.addMeasurement_state(EVENT_DIMMER, EVENT_DIMMER_RIGHT, 6); //3, rotate right 6 steps
+
+  // Timestamp data, represented as UTC epoch
+  bthome.addMeasurement(ID_TIMESTAMP, (uint64_t)1738797643);
 
   // TEXT data
   String msg = "Sensor XYZ";
