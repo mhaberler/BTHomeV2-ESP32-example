@@ -1,5 +1,6 @@
 #ifndef BTHOME_H
 #define BTHOME_H
+#include <Arduino.h>  // Include the Arduino core library for basic functionality
 /*
   BTHome Header file
 
