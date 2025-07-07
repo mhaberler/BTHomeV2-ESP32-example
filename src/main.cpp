@@ -61,9 +61,12 @@ void loop() {
         // Add random variations to the base values (±2.0 for temperature, ±5.0 for humidity)
         float currentTemperature = baseTemperature + (random(-200, 201) / 100.0f); // ±2.0°C
         float currentHumidity = baseHumidity + (random(-500, 501) / 100.0f);       // ±5.0%
-
+        float currentVoltage = 11.0 + (random(-200, 201) / 100.0f);
+        float currentCurrent = 1.2 + (random(-100, 101) / 100.0f);
         bthome.addMeasurement(ID_TEMPERATURE_PRECISE, currentTemperature);
         bthome.addMeasurement(ID_HUMIDITY_PRECISE, currentHumidity);
+        bthome.addMeasurement(ID_VOLTAGE, currentVoltage);
+        bthome.addMeasurement(ID_CURRENT, currentCurrent);
         switch (numClicks) {
             default:
                 break;

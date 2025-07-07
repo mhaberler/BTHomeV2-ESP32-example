@@ -231,12 +231,13 @@ void BTHome::buildPacket() {
     payloadData += FLAG2;  // Indicates the discoverable mode and capabilities of the device
     payloadData += FLAG3;  // LE General Discoverable Mode + BR/EDR Not Supported
 
+#ifdef DUMMY_MANUFACTURER_DATA
     // add a zero-length manufacturer data field
     payloadData += 3;
     payloadData += 0xff;
     payloadData += 0xA9;
     payloadData += 0x0B;
-
+#endif
 
     //local name: move to the response packet
     /*
