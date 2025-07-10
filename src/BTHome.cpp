@@ -421,6 +421,7 @@ uint8_t BTHome::getByteNumber(uint8_t sens) {
         case ID_ILLUMINANCE:
         case ID_POWER:
         case ID_PRESSURE:
+        case DEVICEINFO_FW3:
             return 3;
             break;
         case ID_COUNT4:
@@ -429,6 +430,7 @@ uint8_t BTHome::getByteNumber(uint8_t sens) {
         case ID_VOLUME:
         case ID_WATER:
         case ID_TIMESTAMP:
+        case DEVICEINFO_FW4:
             return 4;
             break;
         default:

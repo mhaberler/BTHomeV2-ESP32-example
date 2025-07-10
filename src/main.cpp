@@ -63,10 +63,23 @@ void loop() {
         float currentHumidity = baseHumidity + (random(-500, 501) / 100.0f);       // ±5.0%
         float currentVoltage = 11.0 + (random(-200, 201) / 100.0f);
         float currentCurrent = 1.2 + (random(-100, 101) / 100.0f);
-        bthome.addMeasurement(ID_TEMPERATURE_PRECISE, currentTemperature);
-        bthome.addMeasurement(ID_HUMIDITY_PRECISE, currentHumidity);
-        bthome.addMeasurement(ID_VOLTAGE, currentVoltage);
-        bthome.addMeasurement(ID_CURRENT, currentCurrent);
+        // bthome.addMeasurement(ID_TEMPERATURE_PRECISE, currentTemperature);
+        // bthome.addMeasurement(ID_HUMIDITY_PRECISE, currentHumidity);
+        // bthome.addMeasurement(ID_VOLTAGE, currentVoltage);
+        // bthome.addMeasurement(ID_CURRENT, currentCurrent);
+        uint64_t payload = 0x01020304; // is interpreted as 0x0304
+
+        payload = 0x00000001; // manual example
+        bthome.addMeasurement(DEVICEINFO_TYPEID, payload);
+
+        // payload = 0x00010204; // wrong
+        payload = 0x04020100;
+
+        bthome.addMeasurement(DEVICEINFO_FW4, payload);
+
+        payload = 0x00060100;
+        bthome.addMeasurement(DEVICEINFO_FW3,payload);
+
         switch (numClicks) {
             default:
                 break;

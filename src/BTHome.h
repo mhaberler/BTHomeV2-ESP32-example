@@ -131,6 +131,12 @@
 #define EVENT_DIMMER_LEFT 0x01
 #define EVENT_DIMMER_RIGHT 0x02
 
+#define DEVICEINFO_TYPEID 0xF0
+#define DEVICEINFO_FW4 0xF1
+#define DEVICEINFO_FW3 0xF2
+
+
+
 class BTHome {
   public:
     void begin(String dname = "DIY-sensor", bool encryption = false, String key = "", bool trigger_based_device = false);
