@@ -65,8 +65,8 @@ void loop() {
         float currentCurrent = 1.2 + (random(-100, 101) / 100.0f);
         // bthome.addMeasurement(ID_TEMPERATURE_PRECISE, currentTemperature);
         // bthome.addMeasurement(ID_HUMIDITY_PRECISE, currentHumidity);
-        // bthome.addMeasurement(ID_VOLTAGE, currentVoltage);
-        // bthome.addMeasurement(ID_CURRENT, currentCurrent);
+        bthome.addMeasurement(ID_VOLTAGE, currentVoltage);
+        bthome.addMeasurement(ID_CURRENT, currentCurrent);
         uint64_t payload = 0x01020304; // is interpreted as 0x0304
 
         payload = 0x00000001; // manual example
