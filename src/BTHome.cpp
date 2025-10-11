@@ -2,7 +2,12 @@
   BTHome features
 */
 #include <Arduino.h>
-#include <NimBLEDevice.h>   // v2.x
+#include <BLEDevice.h>
+#include <BLEUtils.h>
+#include <BLEScan.h>
+#include <BLEAdvertisedDevice.h>
+
+// #include <NimBLEDevice.h>   // v2.x
 #include "BTHome.h"
 
 static BLEAdvertising *pAdvertising;    // From NimBLE : BLEAdvertising = NimBLEAdvertising

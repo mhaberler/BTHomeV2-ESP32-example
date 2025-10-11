@@ -73,12 +73,12 @@ void loop() {
         bthome.addMeasurement(DEVICEINFO_TYPEID, payload);
 
         // payload = 0x00010204; // wrong
-        payload = 0x04020100;
+        // payload = 0x04020100;
 
-        bthome.addMeasurement(DEVICEINFO_FW4, payload);
+        // bthome.addMeasurement(DEVICEINFO_FW4, payload);
 
-        payload = 0x00060100;
-        bthome.addMeasurement(DEVICEINFO_FW3,payload);
+        // payload = 0x00060100;
+        // bthome.addMeasurement(DEVICEINFO_FW3,payload);
 
         switch (numClicks) {
             default:
