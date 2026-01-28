@@ -108,7 +108,7 @@ void loop()
             break;
         }
         bthome.buildPacket();
-        bthome.start(1500);
+        bthome.start(1);
     }
     yield();
 }

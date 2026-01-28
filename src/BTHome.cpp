@@ -7,7 +7,7 @@
 // #include <BLEScan.h>
 // #include <BLEAdvertisedDevice.h>
 
-#include <NimBLEDevice.h> // v2.x
+#include <BLEDevice.h>
 #include "BTHome.h"
 
 static BLEAdvertising *pAdvertising; // From NimBLE : BLEAdvertising = NimBLEAdvertising
@@ -35,10 +35,11 @@ void BTHome::begin(String dname, bool encryption, uint8_t const *const key, bool
           uint8_t const* const key: The Bind Key. This is constant pointer to a constant of type uint8_t. => pointer itself cannot be modified, and neither can the data it points to.
 
     */
-    BLEDevice::init("");
+    setDeviceName(dname);
+    BLEDevice::init(dname);
+
     pAdvertising = BLEDevice::getAdvertising();
 
-    setDeviceName(dname);
 
     if (encryption)
     {
@@ -345,13 +346,13 @@ void BTHome::buildPacket()
         uint8_t nonce[NONCE_LEN];
         uint8_t *countPtr = (uint8_t *)(&this->m_encryptCount);
         // const uint8_t *addrs = BLEDevice::getAddress().getNative();
-        const ble_addr_t *addrs = BLEDevice::getAddress().getBase();
-        nonce[0] = addrs->val[5];
-        nonce[1] = addrs->val[4];
-        nonce[2] = addrs->val[3];
-        nonce[3] = addrs->val[2];
-        nonce[4] = addrs->val[1];
-        nonce[5] = addrs->val[0];
+        const uint8_t *addrs = BLEDevice::getAddress().getNative();
+        nonce[0] = addrs[5];
+        nonce[1] = addrs[4];
+        nonce[2] = addrs[3];
+        nonce[3] = addrs[2];
+        nonce[4] = addrs[1];
+        nonce[5] = addrs[0];
         // esp_read_mac(&nonce[0], ESP_MAC_BT);
         nonce[6] = UUID1;
         nonce[7] = UUID2;
@@ -397,8 +398,8 @@ void BTHome::buildPacket()
     payloadData += sd_length;              // Add the length of the Service Data
     payloadData += serviceData;            // Finalize the packet
 
-    std::vector<uint8_t> payloadData_vector(payloadData.begin(), payloadData.end());
-    oAdvertisementData.addData(payloadData_vector);
+    // std::vector<uint8_t> payloadData_vector(payloadData.begin(), payloadData.end());
+    oAdvertisementData.addData((char *)payloadData.c_str(), payloadData.length());
     pAdvertising->setAdvertisementData(oAdvertisementData);
 
     // fill the local name into oScanResponseData
@@ -419,7 +420,7 @@ void BTHome::buildPacket()
        - BLE_GAP_CONN_MODE_DIR (directed-connectable; 3.C.9.3.3).
        - BLE_GAP_CONN_MODE_UND (undirected-connectable; 3.C.9.3.4).
     */
-    pAdvertising->setConnectableMode(BLE_GAP_CONN_MODE_NON);
+    pAdvertising->setAdvertisementType(BLE_GAP_CONN_MODE_NON);
 }
 
 void BTHome::stop()
