@@ -70,6 +70,7 @@
 #define ID_PRESSURE 0x04
 #define ID_ROTATION 0x3F
 #define ID_SPD 0x44
+#define ID_SPD_SIGNED 0x62
 #define ID_TEMPERATURE_PRECISE 0x02
 #define ID_TEMPERATURE 0x45
 #define ID_TVOC 0x13
@@ -82,6 +83,8 @@
 #define ID_UV 0x46
 #define ID_WATER 0x4F
 #define ID_TIMESTAMP 0x50
+#define ID_ACCELERATION 0x51
+#define ID_ACCELERATION_SIGNED 0x63
 #define ID_TEXT 0x53
 #define ID_RAW 0x54
 
@@ -155,7 +158,7 @@ class BTHome {
 
   private:
     uint8_t getByteNumber(uint8_t sens);
-    uint16_t getFactor(uint8_t sens);
+    uint32_t getFactor(uint8_t sens);
     uint8_t m_sensorDataIdx;
     byte m_sensorData[MEASUREMENT_MAX_LEN] = {0};
     void sortSensorData();
