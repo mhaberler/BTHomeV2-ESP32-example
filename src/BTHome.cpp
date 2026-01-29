@@ -1,12 +1,6 @@
 /*
   BTHome features
 */
-// #include <Arduino.h>
-// #include <BLEDevice.h>
-// #include <BLEUtils.h>
-// #include <BLEScan.h>
-// #include <BLEAdvertisedDevice.h>
-
 #include <BLEDevice.h>
 #include "BTHome.h"
 

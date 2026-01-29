@@ -16,10 +16,6 @@ OneButton button(BUTTON_PIN, true, true); // Button pin, active low, pullup enab
 #define DEVICE_NAME "DIY-sensor" // The name of the sensor
 BTHome bthome;
 
-// Base values for temperature and humidity
-float baseTemperature = 35.00f;
-float baseHumidity = 40.00f;
-
 int numClicks = 0;
 void singleClick()
 {
@@ -27,7 +23,6 @@ void singleClick()
     numClicks = 1;
 }
 
-// this function will be called when the button was pressed 2 times in a short timeframe.
 void doubleClick()
 {
     Serial.println("doubleClick() detected.");
@@ -63,26 +58,22 @@ void loop()
         // bthome.stop();
         bthome.resetMeasurement();
 
-        // Add random variations to the base values (±2.0 for temperature, ±5.0 for humidity)
-        float currentTemperature = baseTemperature + (random(-200, 201) / 100.0f); // ±2.0°C
-        float currentHumidity = baseHumidity + (random(-500, 501) / 100.0f);       // ±5.0%
+        // Add random variations
         float currentVoltage = 11.0 + (random(-200, 201) / 100.0f);
         float currentCurrent = 1.2 + (random(-100, 101) / 100.0f);
+        float currentSpeed = (random(-100, 101) / 50.0f) + 0.5f;
+        float currentAccel = (random(-100, 101) / 500.0f) + 0.5f;
+        float currentElevation = 213.0 + (random(-100, 101) / 100.0f);
 
-        // bthome.addMeasurement(ID_TEMPERATURE_PRECISE, currentTemperature);
-        // bthome.addMeasurement(ID_HUMIDITY_PRECISE, currentHumidity);
+        bthome.addMeasurement(ID_DISTANCEM, currentElevation);
+        bthome.addMeasurement(ID_SPD_SIGNED, currentSpeed);
+        bthome.addMeasurement(ID_ACCELERATION_SIGNED, currentAccel);
         bthome.addMeasurement(ID_VOLTAGE, currentVoltage);
         bthome.addMeasurement(ID_CURRENT, currentCurrent);
 
-        bthome.addMeasurement(ID_SPD_SIGNED, (float)-2.123456);
-        bthome.addMeasurement(ID_ACCELERATION_SIGNED, (float)-3.123456);
-
-        // uint64_t payload = 0x01020304; // is interpreted as 0x0304
-
-        // payload = 0x00000001; // manual example
+        // uint64_t payload = 0x00000001; // manual example
         // bthome.addMeasurement(DEVICEINFO_TYPEID, payload);
 
-        // payload = 0x00010204; // wrong
         // payload = 0x04020100;
 
         // bthome.addMeasurement(DEVICEINFO_FW4, payload);
