@@ -11,6 +11,8 @@
 #include "BTHome.h"
 
 #define DEVICE_NAME "DIY-sensor" // The name of the sensor
+#define DURATION 1000 //mS
+
 BTHome bthome;
 int advCount;
 int numClicks = 0;
@@ -99,7 +101,9 @@ void loop() {
                 break;
         }
         bthome.buildPacket();
-        bthome.start(1);
+        bthome.start(DURATION);
+        delay(DURATION);
+        bthome.stop();
     }
     yield();
 }

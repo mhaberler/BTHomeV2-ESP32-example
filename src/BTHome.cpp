@@ -1,7 +1,11 @@
 /*
   BTHome features
 */
+#ifdef USE_NIMBLE_ARDUINO
+#include <NimBLEDevice.h>   // v2.x
+#else
 #include <BLEDevice.h>
+#endif
 #include "BTHome.h"
 
 static BLEAdvertising *pAdvertising; // From NimBLE : BLEAdvertising = NimBLEAdvertising
@@ -30,7 +34,11 @@ void BTHome::begin(String dname, bool encryption, uint8_t const *const key, bool
 
     */
     setDeviceName(dname);
+#ifdef USE_NIMBLE_ARDUINO
+    BLEDevice::init(dname.c_str());
+#else
     BLEDevice::init(dname);
+#endif
 
     pAdvertising = BLEDevice::getAdvertising();
 
@@ -340,7 +348,11 @@ void BTHome::buildPacket()
         uint8_t nonce[NONCE_LEN];
         uint8_t *countPtr = (uint8_t *)(&this->m_encryptCount);
         // const uint8_t *addrs = BLEDevice::getAddress().getNative();
+#ifdef USE_NIMBLE_ARDUINO
+        const uint8_t *addrs = BLEDevice::getAddress().getVal();
+#else
         const uint8_t *addrs = BLEDevice::getAddress().getNative();
+#endif
         nonce[0] = addrs[5];
         nonce[1] = addrs[4];
         nonce[2] = addrs[3];
@@ -393,7 +405,11 @@ void BTHome::buildPacket()
     payloadData += serviceData;            // Finalize the packet
 
     // std::vector<uint8_t> payloadData_vector(payloadData.begin(), payloadData.end());
+#ifdef USE_NIMBLE_ARDUINO
+    oAdvertisementData.addData((const uint8_t*)payloadData.c_str(), payloadData.length());
+#else
     oAdvertisementData.addData((char *)payloadData.c_str(), payloadData.length());
+#endif
     pAdvertising->setAdvertisementData(oAdvertisementData);
 
     // fill the local name into oScanResponseData
@@ -414,7 +430,11 @@ void BTHome::buildPacket()
        - BLE_GAP_CONN_MODE_DIR (directed-connectable; 3.C.9.3.3).
        - BLE_GAP_CONN_MODE_UND (undirected-connectable; 3.C.9.3.4).
     */
+#ifdef USE_NIMBLE_ARDUINO
+    pAdvertising->setConnectableMode(BLE_GAP_CONN_MODE_NON);
+#else
     pAdvertising->setAdvertisementType(BLE_GAP_CONN_MODE_NON);
+#endif
 }
 
 void BTHome::stop()
@@ -424,12 +444,20 @@ void BTHome::stop()
 
 void BTHome::start(uint32_t duration)
 {
+#ifdef USE_NIMBLE_ARDUINO
     pAdvertising->start(duration);
+#else
+    pAdvertising->start();
+#endif
 }
 
 bool BTHome::isAdvertising()
 {
+#ifdef USE_NIMBLE_ARDUINO
     return pAdvertising->isAdvertising();
+#else
+    return false;
+#endif
 }
 
 void BTHome::sendPacket(uint32_t delay_ms)
