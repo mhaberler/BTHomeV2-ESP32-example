@@ -83,7 +83,7 @@ void loop() {
         advCount++;
         bthome.resetMeasurement();
 
-        if ((advCount & 7 != 0) || fixedOidSet.load()) {
+        if ((advCount & 1 != 0) || fixedOidSet.load()) {
             // Add random variations
             float currentVoltage = 11.0 + (random(-200, 201) / 100.0f);
             float currentCurrent = 1.2 + (random(-100, 101) / 100.0f);
