@@ -1,45 +1,55 @@
-This repository demonstrates how to create your own Bluetooth Low Energy (BLE) on an ESP32 using the Arduino framework.
+# BTHomeV2 ESP32 Example for Arduino 3.x
 
-The [BTHome v2](https://bthome.io/) sensor broadcasting standard is used so that Home Assistant will automatically discovery your device (the BTHome integration is required). BTHome allows you to create your own DIY device and send sensor data to Home Assistant over BLE rather that Wifi. This is a significantly more energy efficient approach, especially if you oplan to run your ESP32 on batteries.
-
-Tested on a TTGO ESP WROVER T8 v1.8, using NimBLE-Arduino v2.1.2
-
-This repository is a fork of the following repository. I have modified it to utilise [NimBLE-Arduino](https://github.com/h2zero/NimBLE-Arduino) v2.x. Thanks to everyone for their contributions. This is awesome.
-
-
-<hr/>
-Original README
-~# The changes to the [NimBLE-Arduino](https://github.com/h2zero/NimBLE-Arduino/commit/edc66e8b6c992d4992602c091bcee26261aa77d3) library are no longer compatible with the project.~
-~# PRs are welcome but I'm no longer maintaining this example~
-
-# BTHomeV2 ESP32 Example
-# V2 of the example, simplified for least input
 An BTHome v2 example.
 Make your DIY sensor, BTHome compatible.
 
-Thanks [@countrysideboy](https://github.com/countrysideboy) for his contributions on Encryption and cleanup code, the most of the code is from his side!
-
 This is an example for a DIY [BTHome v2](https://bthome.io/) sensor.
-
-The original code is from: https://github.com/TheDigital1/ESP32_BTHome
 
 The header file contains human readable variables for the hex Object ids.
 
 Sending entities to Home Assistant is simplified.
 
 1) Download the files from Arduino Code folder.
+1) Edit the BTHome.ino in your favourite Arduino IDE
+1) Change the DEVICE_NAME to the one that should be recognised in BTHome integration
+1) Change the BIND_KEY with your preference or remove it along with the `#define ENABLE_ENCRYPT` for no encryption
+1) Add the object id of the individual entities and the state of it as in the examples
+1) Compile and upload to ESP32
 
-2) Edit the BTHome.ino in your favourite Arduino IDE 
-
-3) Change the DEVICE_NAME to the one that should be recognised in BTHome integration
-
-4) Change the BIND_KEY with your preference or remove it along with the `#define ENABLE_ENCRYPT` for no encryption
-
-5) Add the object id of the individual entities and the state of it as in the examples
-
-6) Compile and upload to ESP32
-
-DONE!
-
-Read the comments in the code for more info. 
+Read the comments in the code for more info.
 For the object ids consider using the variables from BTHome.h instead.
+
+## Build Targets
+
+This project supports multiple ESP32 boards via PlatformIO environments:
+
+| Target                     | Board              | MCU      | Notes                                 |
+| -------------------------- | ------------------ | -------- | ------------------------------------- |
+| `atom-s3u`                 | ESP32-S3 DevKit    | ESP32-S3 | USB CDC, Button on pin 41             |
+| `atom-s3`                  | ESP32-S3 DevKit    | ESP32-S3 | USB CDC, Button on pin 41             |
+| `m5stamp-c3u`              | M5Stamp C3U        | ESP32-C3 | USB CDC, Button on pin 9, 160MHz      |
+| `m5stick-c`                | M5Stick-C          | ESP32    | Uses Nimble-Arduino, Button on pin 37 |
+| `esp32p4_waveshare_devkit` | Waveshare ESP32-P4 | ESP32-P4 | Debug build                           |
+| `m5stack_nanoc6`           | M5Stack NanoC6     | ESP32-C6 | USB CDC enabled                       |
+
+Build with: `platformio run --environment <target>`
+
+Upload with: `platformio run --target upload --environment <target> --upload-port /dev/ttyUSB0`
+
+## Looking for a BTHomeV2 decoder?
+
+see https://github.com/mhaberler/BTHomeDecoder
+
+## History
+
+Original work: https://github.com/TheDigital1/ESP32_BTHome.git
+
+forked by: https://github.com/Chreece/BTHomeV2-ESP32-example.git (unmaintained)
+
+forked by and migrated to Nimble-Arduino: https://github.com/Cuddon/BTHomeV2-ESP32-example.git with encryption support and cleanups by [@countrysideboy](https://github.com/countrysideboy)
+
+I forked the latter and made Nimble-Arduino optional as Arduino 3.0 has sufficient BLE support (see the `m5stick-c` target which still uses Nimble-Arduino).
+
+I also added Pioarduino Platformio-style ini support.
+
+Encryption is untested in this fork.

@@ -2,25 +2,20 @@
   "build": {
     "core": "esp32",
     "extra_flags": [
-      "-DARDUINO_M5STACK_NANOC6",
-      "-DARDUINO_USB_MODE=1",
-      "-DARDUINO_USB_CDC_ON_BOOT=1"
+      "-DARDUINO_M5Stack_NanoC6",
+      "-DARDUINO_USB_MODE=1"
     ],
     "f_cpu": "160000000L",
     "f_flash": "80000000L",
     "flash_mode": "qio",
     "hwids": [
       [
-        "0x2886",
-        "0x0046"
-      ],
-      [
-        "0x303a",
+        "0x303A",
         "0x1001"
       ]
     ],
     "mcu": "esp32c6",
-    "variant": "M5STACK_NANOC6"
+    "variant": "m5stack_nanoc6"
   },
   "connectivity": [
     "wifi",
@@ -29,20 +24,21 @@
     "thread"
   ],
   "debug": {
-    "openocd_target": "esp32c6.cfg"
+    "openocd_target": "esp32c6-builtin.cfg"
   },
   "frameworks": [
     "arduino",
     "espidf"
   ],
-  "name": "M5stack NanoC6 ESP32C6",
+  "name": "M5Stack NanoC6",
   "upload": {
     "flash_size": "4MB",
-    "maximum_ram_size": 327680,
+    "maximum_ram_size": 524288,
     "maximum_size": 4194304,
     "require_upload_port": true,
-    "speed": 460800
+    "speed": 460800,
+    "protocol": "esptool"
   },
-  "url": "https://docs.m5stack.com/en/core/M5NanoC6",
+  "url": "https://docs.m5stack.com/en/core/nanoc6",
   "vendor": "M5Stack"
 }

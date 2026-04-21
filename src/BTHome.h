@@ -1,20 +1,21 @@
 #ifndef BTHOME_H
 #define BTHOME_H
-#include <Arduino.h>  // Include the Arduino core library for basic functionality
+#include <Arduino.h> // Include the Arduino core library for basic functionality
 /*
   BTHome Header file
 
   Include the BTHome class declaration
 */
-#include "mbedtls/ccm.h"    // Provides an API for the CCM authenticated encryption mode for block ciphers.
+#include "mbedtls/ccm.h" // Provides an API for the CCM authenticated encryption mode for block ciphers.
 
 #if defined(ESP32)
-  #include "esp_random.h"   // Expressif library to generate et one random 32-bit word from hardware
 #endif
 
 #define BLE_ADVERT_MAX_LEN 31
-#define MEASUREMENT_MAX_LEN 23 //23=31(BLE_ADVERT_MAX_LEN)-3(FLAG)-1(SERVICE_DATA)-2(UUID)-1(ENCRYPT)-1(serviceData length bit)
-#define BIND_KEY_LEN 16   // stabilisce la lunghezza dell’array bind_key[]
+// 23=31(BLE_ADVERT_MAX_LEN)-3(FLAG)-1(SERVICE_DATA)-2(UUID)-1(ENCRYPT)-1(serviceData
+// length bit)
+#define MEASUREMENT_MAX_LEN 23
+#define BIND_KEY_LEN 16 // stabilisce la lunghezza dell’array bind_key[]
 #define NONCE_LEN 13
 #define MIC_LEN 4
 
@@ -24,13 +25,13 @@
 //    1st byte: length of the element (excluding the length byte itself)
 //    2nd byte: AD type - specifies what data type is included in the element
 //    AD data - one or more bytes - the meaning is defined by the AD type
-#define FLAG 0x020106     // Always the same for BTHome
+#define FLAG 0x020106 // Always the same for BTHome
 #define FLAG1 0x02
 #define FLAG2 0x01
 #define FLAG3 0x06
 #define UUID 0xD2FC
-#define UUID1 0xD2      // UUID first byte
-#define UUID2 0xFC      // UUID second byte
+#define UUID1 0xD2 // UUID first byte
+#define UUID2 0xFC // UUID second byte
 #define SERVICE_DATA 0x16
 
 #define NO_ENCRYPT 0x40
@@ -53,8 +54,8 @@
 #define ID_DISTANCE 0x40
 #define ID_DISTANCEM 0x41
 #define ID_DURATION 0x42
-#define ID_ENERGY 0x0A      // uint24: 3 bytes, kWh
-#define ID_ENERGY4 0x4D     // uint32: 4 bytes, kWh
+#define ID_ENERGY 0x0A  // uint24: 3 bytes, kWh
+#define ID_ENERGY4 0x4D // uint32: 4 bytes, kWh
 #define ID_GAS 0x4B
 #define ID_GAS4 0x4C
 #define ID_HUMIDITY 0x2E
@@ -66,7 +67,7 @@
 #define ID_MOISTURE_PRECISE 0x14
 #define ID_PM25 0x0D
 #define ID_PM10 0x0E
-#define ID_POWER 0x0B       // uint24: 3 bytes, W
+#define ID_POWER 0x0B // uint24: 3 bytes, W
 #define ID_PRESSURE 0x04
 #define ID_ROTATION 0x3F
 #define ID_SPD 0x44
@@ -138,37 +139,39 @@
 #define DEVICEINFO_FW4 0xF1
 #define DEVICEINFO_FW3 0xF2
 
-
-
 class BTHome {
-  public:
-    void begin(String dname = "DIY-sensor", bool encryption = false, String key = "", bool trigger_based_device = false);
-    void begin(String dname = "DIY-sensor", bool encryption = false, uint8_t const* const key = NULL, bool trigger_based_device = false);
-    void setDeviceName(String dname = "");
-    void buildPacket();
-    void start(uint32_t duration = 0);
-    void stop();
-    bool isAdvertising();
-    void resetMeasurement();
-    void sendPacket(uint32_t delay_ms = 1500);
-    void addMeasurement_state(uint8_t sensor_id, uint8_t state, uint8_t steps = 0);
-    void addMeasurement(uint8_t sensor_id, uint64_t value);
-    void addMeasurement(uint8_t sensor_id, float value);
-    void addMeasurement(uint8_t sensor_id, uint8_t *value, uint8_t size);
+public:
+  void begin(String dname = "DIY-sensor", bool encryption = false,
+             String key = "", bool trigger_based_device = false);
+  void begin(String dname = "DIY-sensor", bool encryption = false,
+             uint8_t const *const key = NULL,
+             bool trigger_based_device = false);
+  void setDeviceName(String dname = "");
+  void buildPacket();
+  void start(uint32_t duration = 0);
+  void stop();
+  bool isAdvertising();
+  void resetMeasurement();
+  void sendPacket(uint32_t delay_ms = 1500);
+  void addMeasurement_state(uint8_t sensor_id, uint8_t state,
+                            uint8_t steps = 0);
+  void addMeasurement(uint8_t sensor_id, uint64_t value);
+  void addMeasurement(uint8_t sensor_id, float value);
+  void addMeasurement(uint8_t sensor_id, uint8_t *value, uint8_t size);
 
-  private:
-    uint8_t getByteNumber(uint8_t sens);
-    uint32_t getFactor(uint8_t sens);
-    uint8_t m_sensorDataIdx;
-    byte m_sensorData[MEASUREMENT_MAX_LEN] = {0};
-    void sortSensorData();
-    String m_devName;
-    bool m_encryptEnable;
-    bool m_triggerDevice;
-    uint32_t m_encryptCount;
-    mbedtls_ccm_context m_encryptCTX;
-    uint8_t m_bindKey[BIND_KEY_LEN];
-    bool m_sortEnable;
-    byte m_lastObjectId;
+private:
+  uint8_t getByteNumber(uint8_t sens);
+  uint32_t getFactor(uint8_t sens);
+  uint8_t m_sensorDataIdx;
+  byte m_sensorData[MEASUREMENT_MAX_LEN] = {0};
+  void sortSensorData();
+  String m_devName;
+  bool m_encryptEnable;
+  bool m_triggerDevice;
+  uint32_t m_encryptCount;
+  mbedtls_ccm_context m_encryptCTX;
+  uint8_t m_bindKey[BIND_KEY_LEN];
+  bool m_sortEnable;
+  byte m_lastObjectId;
 };
 #endif // BTHOME_H
