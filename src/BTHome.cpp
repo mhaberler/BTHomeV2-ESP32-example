@@ -468,6 +468,7 @@ uint8_t BTHome::getByteNumber(uint8_t sens) {
   case STATE_VIBRATION:
   case STATE_WINDOW:
   case EVENT_BUTTON:
+  case ID_SETTINGS_REVISION:
     return 1;
     break;
   case ID_DURATION:

@@ -17,6 +17,7 @@
 
 BTHome bthome;
 int advCount;
+uint8_t settings_revision;
 std::atomic<int> numClicks{0};
 std::atomic<bool> fixedOidSet{false};
 
@@ -99,12 +100,14 @@ void loop() {
       bthome.addMeasurement(ID_VOLTAGE, currentVoltage);
       bthome.addMeasurement(ID_CURRENT, currentCurrent);
     } else {
+      settings_revision++;
       uint64_t payload = 0x00000001; // manual example
       bthome.addMeasurement(DEVICEINFO_TYPEID, payload);
       payload = 0x04020100;
       bthome.addMeasurement(DEVICEINFO_FW4, payload);
       payload = 0x00060100;
-      bthome.addMeasurement(DEVICEINFO_FW3, payload);
+      // bthome.addMeasurement(DEVICEINFO_FW3, payload);
+      bthome.addMeasurement(ID_SETTINGS_REVISION, (uint64_t)settings_revision);
     }
     int clicks = numClicks.exchange(0);
     switch (clicks) {
