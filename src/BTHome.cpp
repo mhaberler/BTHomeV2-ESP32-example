@@ -183,59 +183,62 @@ void BTHome::addMeasurement(uint8_t sensor_id, uint8_t *value, uint8_t size) {
 }
 
 void BTHome::sortSensorData() {
-  uint8_t i, j, k, data_block_num;
-
-  struct DATA_BLOCK {
-    byte object_id;
-    byte data[4];
-    uint8_t data_len;
+  // TLV-aware sort: descriptors point into m_sensorData; reorder by object_id,
+  // then emit through a scratch buffer. Handles fixed-length values,
+  // EVENT_DIMMER (variable), and RAW/TEXT (length-prefixed).
+  struct BLOCK {
+    uint8_t offset; // start of object id in m_sensorData
+    uint8_t total;  // total bytes consumed (id + optional len + data)
   };
-  struct DATA_BLOCK data_block[MEASUREMENT_MAX_LEN / 2 + 1];
-  struct DATA_BLOCK temp_data_block;
+  BLOCK blocks[MEASUREMENT_MAX_LEN];
+  uint8_t n = 0;
 
-  for (i = 0, j = 0, data_block_num = 0; j < this->m_sensorDataIdx; i++) {
-    // copy the object id
-    data_block[i].object_id = this->m_sensorData[j];
-    data_block_num++;
-    // copy the data length
-    if (this->m_sensorData[j] == EVENT_DIMMER) {
-      if (this->m_sensorData[j + 1] == EVENT_DIMMER_NONE) {
-        data_block[i].data_len = 1;
-      } else {
-        data_block[i].data_len = 2;
-      }
+  for (uint8_t j = 0; j < this->m_sensorDataIdx;) {
+    uint8_t id = this->m_sensorData[j];
+    uint8_t data_len;
+    if (id == ID_RAW || id == ID_TEXT) {
+      // 1 byte length prefix follows the id, then `len` data bytes
+      if (j + 1 >= this->m_sensorDataIdx)
+        break;
+      data_len = 1 + this->m_sensorData[j + 1];
+    } else if (id == EVENT_DIMMER) {
+      data_len = (this->m_sensorData[j + 1] == EVENT_DIMMER_NONE) ? 1 : 2;
     } else {
-      data_block[i].data_len = getByteNumber(this->m_sensorData[j]);
+      data_len = getByteNumber(id);
     }
-    // copy the data
-    for (k = 0; k < data_block[i].data_len; k++) {
-      data_block[i].data[k] = this->m_sensorData[j + 1 + k];
-    }
-    // move to the next object id location
-    j = j + data_block[i].data_len + 1;
+    uint8_t total = 1 + data_len;
+    if (j + total > this->m_sensorDataIdx)
+      break; // malformed; bail
+    blocks[n].offset = j;
+    blocks[n].total = total;
+    n++;
+    j += total;
   }
 
-  if (data_block_num > 1) {
-    // bubble sort
-    for (i = 0; i < data_block_num - 1; i++) {
-      for (j = 0; j < data_block_num - 1 - i; j++) {
-        if (data_block[j].object_id > data_block[j + 1].object_id) {
-          memcpy(&temp_data_block, &data_block[j], sizeof(struct DATA_BLOCK));
-          memcpy(&data_block[j], &data_block[j + 1], sizeof(struct DATA_BLOCK));
-          memcpy(&data_block[j + 1], &temp_data_block,
-                 sizeof(struct DATA_BLOCK));
-        }
+  if (n < 2)
+    return;
+
+  // bubble sort descriptors by object_id
+  for (uint8_t i = 0; i < n - 1; i++) {
+    for (uint8_t j = 0; j < n - 1 - i; j++) {
+      if (this->m_sensorData[blocks[j].offset] >
+          this->m_sensorData[blocks[j + 1].offset]) {
+        BLOCK tmp = blocks[j];
+        blocks[j] = blocks[j + 1];
+        blocks[j + 1] = tmp;
       }
-    }
-    // copy the new order to m_sensorData array
-    for (i = 0, j = 0; i < data_block_num && j < this->m_sensorDataIdx; i++) {
-      this->m_sensorData[j] = data_block[i].object_id;
-      for (k = 0; k < data_block[i].data_len; k++) {
-        this->m_sensorData[j + 1 + k] = data_block[i].data[k];
-      }
-      j = j + data_block[i].data_len + 1;
     }
   }
+
+  // emit via scratch buffer to avoid clobbering source ranges
+  uint8_t scratch[MEASUREMENT_MAX_LEN];
+  uint8_t w = 0;
+  for (uint8_t i = 0; i < n; i++) {
+    memcpy(&scratch[w], &this->m_sensorData[blocks[i].offset],
+           blocks[i].total);
+    w += blocks[i].total;
+  }
+  memcpy(this->m_sensorData, scratch, w);
 }
 
 void BTHome::buildPacket() {
