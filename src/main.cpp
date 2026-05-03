@@ -86,37 +86,38 @@ void loop() {
     advCount++;
     bthome.resetMeasurement();
 
-    // if (((advCount & 1) != 0) || fixedOidSet.load()) {
-    //   // Add random variations
-    //   float currentVoltage = 11.0 + (random(-200, 201) / 100.0f);
-    //   float currentCurrent = 1.2 + (random(-100, 101) / 100.0f);
-    //   float currentSpeed = (random(-100, 101) / 50.0f) + 0.5f;
-    //   float currentAccel = (random(-100, 101) / 500.0f) + 0.5f;
-    //   float currentElevation = 213.0 + (random(-100, 101) / 100.0f);
+    if (((advCount & 1) != 0) || fixedOidSet.load()) {
+      // Add random variations
+      float currentVoltage = 11.0 + (random(-200, 201) / 100.0f);
+      float currentCurrent = 1.2 + (random(-100, 101) / 100.0f);
+      float currentSpeed = (random(-100, 101) / 50.0f) + 0.5f;
+      float currentAccel = (random(-100, 101) / 500.0f) + 0.5f;
+      float currentElevation = 213.0 + (random(-100, 101) / 100.0f);
 
-    //   bthome.addMeasurement(ID_DISTANCEM, currentElevation);
-    //   bthome.addMeasurement(ID_SPD_SIGNED, currentSpeed);
-    //   bthome.addMeasurement(ID_ACCELERATION_SIGNED, currentAccel);
-    //   bthome.addMeasurement(ID_VOLTAGE, currentVoltage);
-    //   bthome.addMeasurement(ID_CURRENT, currentCurrent);
-    // } else {
+      bthome.addMeasurement(ID_DISTANCEM, currentElevation);
+      bthome.addMeasurement(ID_SPD_SIGNED, currentSpeed);
+      bthome.addMeasurement(ID_ACCELERATION_SIGNED, currentAccel);
+      bthome.addMeasurement(ID_VOLTAGE, currentVoltage);
+      bthome.addMeasurement(ID_CURRENT, currentCurrent);
+    } else {
 
-    settings_revision++;
-    uint64_t payload = 0x00000001; // manual example
+      settings_revision++;
+      uint64_t payload = 0x00000001; // manual example
 
-    payload = 0x00060100;
-    bthome.addMeasurement(DEVICEINFO_FW3, payload);
+      payload = 0x00060100;
+      bthome.addMeasurement(DEVICEINFO_FW3, payload);
 
-    bthome.addMeasurement(ID_SETTINGS_REVISION, (uint64_t)settings_revision);
+      // bthome.addMeasurement(ID_SETTINGS_REVISION,
+      // (uint64_t)settings_revision);
 
-    payload = 0x04020100;
-    bthome.addMeasurement(DEVICEINFO_FW4, payload);
+      payload = 0x04020100;
+      bthome.addMeasurement(DEVICEINFO_FW4, payload);
 
-    // bthome.addMeasurement(DEVICEINFO_TYPEID, payload);
+      bthome.addMeasurement(DEVICEINFO_TYPEID, payload);
 
-    bthome.addMeasurement(ID_TEXT, (uint8_t *)"ABC", 3);
-
-    // }
+      bthome.addMeasurement(ID_TEXT, (uint8_t *)"ABC", 3);
+      // bthome.addMeasurement(ID_RAW, (uint8_t *)"ABC", 3);
+    }
     int clicks = numClicks.exchange(0);
     switch (clicks) {
     default:
