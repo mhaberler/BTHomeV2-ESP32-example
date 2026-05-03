@@ -102,19 +102,19 @@ void loop() {
     // } else {
 
     settings_revision++;
+    uint64_t payload = 0x00000001; // manual example
 
-    bthome.addMeasurement(ID_TEXT, (uint8_t *)"ABC", 3);
+    payload = 0x00060100;
+    bthome.addMeasurement(DEVICEINFO_FW3, payload);
 
     bthome.addMeasurement(ID_SETTINGS_REVISION, (uint64_t)settings_revision);
-
-    uint64_t payload = 0x00000001; // manual example
 
     payload = 0x04020100;
     bthome.addMeasurement(DEVICEINFO_FW4, payload);
 
     // bthome.addMeasurement(DEVICEINFO_TYPEID, payload);
-    payload = 0x00060100;
-    bthome.addMeasurement(DEVICEINFO_FW3, payload);
+
+    bthome.addMeasurement(ID_TEXT, (uint8_t *)"ABC", 3);
 
     // }
     int clicks = numClicks.exchange(0);
